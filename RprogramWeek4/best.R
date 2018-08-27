@@ -7,6 +7,7 @@ best <- function(state, outcome){
   thedata <- read.csv("outcome-of-care-measures.csv", colClasses="character")
   #make data frame to hold only data necessary for analysis
   theframe <- thedata[, c( 2, 7, 11,17,23)]
+  theframe
   #filter data with function variables
   if(outcome=="heart attack")
     {theindex<-3}
@@ -16,6 +17,9 @@ best <- function(state, outcome){
     {theindex<-5}
   
   #display lowest value for state and outcome
+  
+  resultset <- theframe[ which(theframe$State==state && theframe[theindex]), ]
+  resultset
 
 }
 
