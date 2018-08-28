@@ -1,22 +1,17 @@
-
-best <- function(state, outcome){
+rankhospital <- function(state, outcome, level){
   setwd("C:/RPrograms/RprogramWeek4")
-  outcome="pneumonia"
-  state="NY"
+  
   # read data from outcome
   # define outcome as either heart attack, heart failure or pneumonia
   thedata <- read.csv("outcome-of-care-measures.csv", colClasses="character")
   #make data frame to hold only data necessary for analysis
- # theframe <- thedata[, c( 2, 7, 11,17,23)]
   validState <- unique(c(thedata[, 7]))
   validState <- sort(validState)
-  head(validState, 60)
-  
+  #validate state
   if(!is.element(tolower(state), tolower(validState))){
     stop("not valid state")
     geterrmessage()
   }
-  
   #validate data
   validOutcome <- list("heart attack", "heart failure", "pneumonia")
   if(!is.element(tolower(outcome),tolower(validOutcome))){
@@ -28,25 +23,28 @@ best <- function(state, outcome){
   {
     colNumber <- 11
   }
-  if(identical(outcome,"heart failure"))
+  if(identical(outcome,validOutcome[[2]]))
   {
     colNumber <- 17
   }
-  if(identical(outcome,"pneumonia"))
+  if(identical(outcome,validOutcome[[3]]))
   {
     colNumber <- 23
   }
-  #display lowest value for state and outcome
-  
+  #filter data set to only include needed columns
   querydata <- subset(thedata[c(2,7,colNumber)])
   colnames(querydata) <- c("Hospital", "State", "DeathData")
-  querydata <- subset(querydata, querydata$State == state)
   
+  #filter as per requirements by state
+  querydata <- subset(querydata, tolower(querydata$State) == tolower(state))
+  #create a rank column and make value NA
   querydata$hospitalrank <- NA
-  querydata$hospitalrank[order(querydata$DeathData)] <- 1:nrow(querydata)
+  querydata$hospitalrank[order(querydata$DeathData,querydata$Hospital)] <- 1:nrow(querydata)
   
   finaldata <- querydata[order(querydata$hospitalrank), ]
-  head(finaldata, 1)
-    
-    }
-
+  
+  finaldata <- finaldata[,2:5]
+  head(finaldata , level)
+  
+  
+}
