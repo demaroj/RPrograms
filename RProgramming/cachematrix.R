@@ -13,7 +13,7 @@ makeVector <- function(x = numeric()) {
        setmean = setmean,
        getmean = getmean)
 }
-## makeCacheMatrix creates the matrix
+## makeCacheMatrix creates the matrix and inverse
 
 makeCacheMatrix <- function(x = matrix()) {
   inv <- NULL
@@ -28,7 +28,7 @@ makeCacheMatrix <- function(x = matrix()) {
 }
 
 
-## 
+## cacheSolve calculates matrix mean and determines if inverse is needed.
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
