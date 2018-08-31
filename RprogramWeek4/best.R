@@ -1,8 +1,8 @@
 
 best <- function(state, outcome){
   setwd("C:/RPrograms/RprogramWeek4")
-  outcome="pneumonia"
-  state="NY"
+  #outcome="pneumonia"
+  #state="NY"
   # read data from outcome
   # define outcome as either heart attack, heart failure or pneumonia
   thedata <- read.csv("outcome-of-care-measures.csv", colClasses="character")
@@ -24,15 +24,15 @@ best <- function(state, outcome){
     geterrmessage()
   }
   #use data to rank 
-  if(identical(outcome,validOutcome[[1]]))
+  if(identical(tolower(outcome),validOutcome[[1]]))
   {
     colNumber <- 11
   }
-  if(identical(outcome,"heart failure"))
+  if(identical(tolower(outcome),"heart failure"))
   {
     colNumber <- 17
   }
-  if(identical(outcome,"pneumonia"))
+  if(identical(tolower(outcome),"pneumonia"))
   {
     colNumber <- 23
   }
@@ -41,9 +41,9 @@ best <- function(state, outcome){
   querydata <- subset(thedata[c(2,7,colNumber)])
   colnames(querydata) <- c("Hospital", "State", "DeathData")
   querydata <- subset(querydata, querydata$State == state)
-  
+  querydata <- querydata[querydata$DeathData != 'Not Available',]
   querydata$hospitalrank <- NA
-  querydata$hospitalrank[order(querydata$DeathData)] <- 1:nrow(querydata)
+  querydata$hospitalrank[order(as.numeric(as.character(querydata$DeathData)))] <- 1:nrow(querydata)
   
   finaldata <- querydata[order(querydata$hospitalrank), ]
   head(finaldata, 1)

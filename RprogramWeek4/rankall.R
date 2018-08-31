@@ -1,8 +1,8 @@
 rankall <- function(outcome, num){
   setwd("C:/RPrograms/RprogramWeek4")
   ##read outcome data
-  # outcome <- "heart attack"
-  # num <- 'worst'
+   # outcome <- "heart attack"
+   # num <- 'worst'
   
   #pull in data set
   thedata <- read.csv("outcome-of-care-measures.csv", colClasses="character")
@@ -16,6 +16,7 @@ rankall <- function(outcome, num){
     stop("not valid condition")
     geterrmessage()
   }
+  outcome <- tolower(outcome)
   #use data to rank 
   if(identical(outcome,validOutcome[[1]]))
   {
@@ -41,15 +42,18 @@ rankall <- function(outcome, num){
     #filter by state in validState list
     querydata <- subset(querydata, querydata$State == state)
     qNum <- nrow(querydata)
-    
     #add column to df and then add rank by state
     querydata$hospitalrank <- NA
     querydata$hospitalrank[order(querydata$DeathData, querydata$Hospital)] <- 1:nrow(querydata)
     
     if(is.numeric(num)) {
       num <- num
-      rankdata <- subset(querydata, querydata$hospitalrank==num )
-      if(length(rankdata)<1){ rankdata[nrow(rankdata) + 1,] = list("", state, "NA", num)}
+      rankdata <- subset(querydata, querydata$hospitalrank==num)
+      x <- nrow(rankdata)
+      if(x < 1)
+      {
+        rankdata[nrow(rankdata) + 1,] = list("", state, "NA", num)
+      }
     } 
     else if (tolower(num) == tolower("best"))
       {
@@ -58,7 +62,7 @@ rankall <- function(outcome, num){
     else 
       {
       #number of rows
-      num <- qNum
+      #num <- qNum
       rankdata <- tail(querydata, 1)
     }
     

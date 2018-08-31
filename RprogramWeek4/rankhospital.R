@@ -38,18 +38,14 @@ rankhospital <- function(state, outcome, level){
   #filter as per requirements by state
   querydata <- subset(querydata, tolower(querydata$State) == tolower(state))
   
-  as.numeric(as.character(querydata$DeathData))
+  querydata <- querydata[querydata$DeathData != 'Not Available',]
   
   #create a rank column and make value NA
   querydata$hospitalrank <- NA
-  
-  
   querydata$hospitalrank[order(as.numeric(as.character(querydata$DeathData)),querydata$Hospital)] <- 1:nrow(querydata)
   
   finaldata <- querydata[order(querydata$hospitalrank), ]
   
   #finaldata <- finaldata[ ,2:5]
   head(finaldata , level)
-  
-  
 }
