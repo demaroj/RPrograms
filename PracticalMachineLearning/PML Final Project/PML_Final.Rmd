@@ -5,7 +5,7 @@ date: "9/11/2019"
 output: html_document
 ---
 
-# Abstract
+## Abstract
 Data from IoT devices for fitness collect an enormous amount of data about an individuals personal activities.  For this analysis, data from 6 individuals performing barbell lifts in a variety of correct and incorrect fashions was collected. 
 
 The task for the analyst is to predict the manner in which a user did the exercise.  The given data consists or a training and a test group.  The data from both groups is cleaned and analyzed in a variety of fashions to determine the best model for prediction. The provided test set is held until the best model is created.  The training set is divided into a training and testing set to help determine the best model.
@@ -24,7 +24,7 @@ library(rattle)
 library(randomForest)
 ```
 
-## Download Data
+### Download Source Data
 ```{r dataload, warning=FALSE}
 ## load training data
 training = read_csv(url("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"))
@@ -34,19 +34,19 @@ dim(training)
 testing <- read_csv(url("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"))
 dim(testing)
 ```
-## clean training data
+####1. Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013
 
+### Clean Training Data
+#### Columns with over 90% NA or blank are removed from analysis.  The the 1st 7 columns are not data but description fields.  They are eliminated from training data and from final testing data below.
 ```{r TrainingData}
-indColToRemove <- which(colSums(is.na(training) | training=="")>0.9*dim(training)[1]) 
+indColToRemove <- which(colSums(is.na(training) | training=="")>0.9*dim(training)[1])
 training_clean <- training[,-indColToRemove]
 training_clean <- training_clean[,-c(1:7)]
 dim(training_clean)
-
-
-
 ```
 
-## Clean Model Verification Data
+### Clean Model Verification Data
+#### final_clean data is processed the same as the training set above but is reserved until the best, most accurate model is realized.
 ```{r FinalData}
 indColToRemove <- which(colSums(is.na(testing) | testing=="")>0.9*dim(testing)[1]) 
 final_clean <- testing[,-indColToRemove]
@@ -54,19 +54,22 @@ final_clean <- final_clean[,-c(1:7)]
 dim(final_clean)
 ```
 
+### Create Training and Testing Data Set
+#### Make Training and Testing Set from the Training Data downloaded from source(1).  This testing set is different than testing set provided from source(1) and used to test the different models.  The testing data from source will be used with final model to validate that model. 70% of the training data was used to create the model training data, 30% was reserved for testing.
 ```{r TrainingTestSets}
-
 set.seed(12345)
 ## Get training data
 inTrain <- createDataPartition(training_clean$classe, p = 0.7, list = FALSE)
 trainData <- training_clean[inTrain, ]
 dim(trainData)
+
 #Get Test Set
 testData <- training_clean[-inTrain, ]
 dim(testData)
 ```
 
-## Correlation Analysis
+### Correlation Analysis
+#### Plot correlations for the 53 columns in the data.  Then determined the 13 most highly correlated factors.  The confusion matrix calculates crosstabulation values for the model.  The accuracy from this matrix for classification trees model is 72.2%.  
 ```{r Correlation}
 corr_data <- cor(trainData[, -53])
 corrplot(corr_data, method="circle")
@@ -83,9 +86,9 @@ predictTreeMod1 <- predict(decisionTreeMod1, testData, type = "class")
 ConMat <- confusionMatrix(factor(predictTreeMod1), factor(testData$classe))
 ConMat
 
-#plot accuracy data
+
 ```
-## Plot Accuracy for Decision Tree
+### Plot Accuracy for Decision Tree
 ```{r Plot1}
 plot(ConMat$table, col=ConMat$byClass, 
       main = paste("Decision Tree Accuracy = ", round(ConMat$overall['Accuracy'],4)))
@@ -105,13 +108,14 @@ ConRF
 
 plot(modRF1)
 ```
-## Plot Accuracy of Random Forest Model
 
+### Plot Accuracy of Random Forest Model
+#### Accuracy of Random Forest Data is very close to 1 (98.9%).  
 ```{r RFAccuracyPlot}
-
 plot(ConRF$table, col=ConRF$byClass, main=paste("RF Confusion Matrix: Accuracy =", round(ConRF$overall['Accuracy'], 4)))
 ```
-## GBM
+
+### GBM analysis
 ```{r GBM}
 set.seed(12345)
 cGBM <- trainControl(method="repeatedcv", number=5,repeats=1)
@@ -120,7 +124,8 @@ modGBM$finalModel
 
 print(modGBM)
 ```
-# Validate GBM model
+### Validate GBM model
+####The confusion matrix for the gbm model places the accuracy at about 96%.  Therefore the random forest model is more accurate and will be used in the final validation test.
 ```{r GBMValidate}
 predictGBM <- predict(modGBM, newdata = testData)
 
@@ -128,7 +133,8 @@ CMgbm <- confusionMatrix(factor(predictGBM), factor(testData$classe))
 CMgbm
 ```
 
-## Run test data provided in beginning from source.
+### Run test data provided in beginning from source.
+#### Run test final_clean data against the most accurate model - Random Forest.  Results are for twenty (20) test against classe field of data.
 ```{r ValidateTestData}
 Results <- predict(modRF1, newdata = final_clean)
 Results
