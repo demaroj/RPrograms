@@ -1,0 +1,135 @@
+---
+title: "PML Final Project"
+author: "Joe DeMaro"
+date: "9/11/2019"
+output: html_document
+---
+
+# Abstract
+Data from IoT devices for fitness collect an enormous amount of data about an individuals personal activities.  For this analysis, data from 6 individuals performing barbell lifts in a variety of correct and incorrect fashions was collected. 
+
+The task for the analyst is to predict the manner in which a user did the exercise.  The given data consists or a training and a test group.  The data from both groups is cleaned and analyzed in a variety of fashions to determine the best model for prediction. The provided test set is held until the best model is created.  The training set is divided into a training and testing set to help determine the best model.
+
+
+
+```{r echo=FALSE, warning=FALSE}
+library(readr)
+library(AppliedPredictiveModeling)
+library(caret)
+library(gbm)
+library(corrplot)
+library(rpart)
+library(rpart.plot)
+library(rattle)
+library(randomForest)
+```
+
+## Download Data
+```{r dataload, warning=FALSE}
+## load training data
+training = read_csv(url("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"))
+dim(training)
+
+## load test data
+testing <- read_csv(url("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"))
+dim(testing)
+```
+## clean training data
+
+```{r TrainingData}
+indColToRemove <- which(colSums(is.na(training) | training=="")>0.9*dim(training)[1]) 
+training_clean <- training[,-indColToRemove]
+training_clean <- training_clean[,-c(1:7)]
+dim(training_clean)
+
+
+
+```
+
+## Clean Model Verification Data
+```{r FinalData}
+indColToRemove <- which(colSums(is.na(testing) | testing=="")>0.9*dim(testing)[1]) 
+final_clean <- testing[,-indColToRemove]
+final_clean <- final_clean[,-c(1:7)]
+dim(final_clean)
+```
+
+```{r TrainingTestSets}
+
+set.seed(12345)
+## Get training data
+inTrain <- createDataPartition(training_clean$classe, p = 0.7, list = FALSE)
+trainData <- training_clean[inTrain, ]
+dim(trainData)
+#Get Test Set
+testData <- training_clean[-inTrain, ]
+dim(testData)
+```
+
+## Correlation Analysis
+```{r Correlation}
+corr_data <- cor(trainData[, -53])
+corrplot(corr_data, method="circle")
+
+## find highly correlated columns
+highCor <- findCorrelation(corr_data, cutoff = 0.80)
+names(trainData)[highCor]
+
+decisionTreeMod1 <- rpart(classe ~ ., data=trainData, method="class")
+fancyRpartPlot(decisionTreeMod1)
+
+predictTreeMod1 <- predict(decisionTreeMod1, testData, type = "class")
+
+ConMat <- confusionMatrix(factor(predictTreeMod1), factor(testData$classe))
+ConMat
+
+#plot accuracy data
+```
+## Plot Accuracy for Decision Tree
+```{r Plot1}
+plot(ConMat$table, col=ConMat$byClass, 
+      main = paste("Decision Tree Accuracy = ", round(ConMat$overall['Accuracy'],4)))
+```
+## Random Forest Analysis
+```{r RFAnalysis}
+controlRF <- trainControl(method="cv",number=3, verboseIter = FALSE)
+modRF1 <- train(classe ~ ., data=trainData, method="rf", trControl=controlRF)
+modRF1$finalModel
+```
+
+## Validate RF model
+```{r RFValidate}
+predictRF1 <- predict(modRF1, newdata=testData)
+ConRF <- confusionMatrix(factor(predictRF1), factor(testData$classe))
+ConRF
+
+plot(modRF1)
+```
+## Plot Accuracy of Random Forest Model
+
+```{r RFAccuracyPlot}
+
+plot(ConRF$table, col=ConRF$byClass, main=paste("RF Confusion Matrix: Accuracy =", round(ConRF$overall['Accuracy'], 4)))
+```
+## GBM
+```{r GBM}
+set.seed(12345)
+cGBM <- trainControl(method="repeatedcv", number=5,repeats=1)
+modGBM <- train(classe ~ ., data=trainData, method="gbm", trControl=cGBM, verbose=FALSE)
+modGBM$finalModel
+
+print(modGBM)
+```
+# Validate GBM model
+```{r GBMValidate}
+predictGBM <- predict(modGBM, newdata = testData)
+
+CMgbm <- confusionMatrix(factor(predictGBM), factor(testData$classe))
+CMgbm
+```
+
+## Run test data provided in beginning from source.
+```{r ValidateTestData}
+Results <- predict(modRF1, newdata = final_clean)
+Results
+```

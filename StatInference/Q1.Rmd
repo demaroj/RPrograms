@@ -1,0 +1,73 @@
+---
+title: "Statistical Inference - Simulation Project"
+author: "Joe DeMaro"
+date: "December 2018"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+##Set Parameters
+```{r}
+setwd("c:\\rprograms\\statinference")
+n <- 1000
+group <- 40
+lambda <- 0.2
+```
+##Calculate Theoretical Mean and SD
+```{r}
+theoreticalmean <- 1 / lambda
+theoreticalsd <- (1 / (lambda * lambda)) / group
+```
+##Run Simulation
+```{r echo=TRUE}
+# run the simulation
+data  <- rexp(n * group, lambda )
+matrixdata <- matrix(data, n, group)
+matrixmean <- apply(matrixdata,1,mean)
+```
+##Tabulate Simulation Data
+```{r echo=TRUE}
+simmean <- mean(matrixmean)
+simsd <- sd(matrixmean)
+simvar <- var(matrixmean)
+
+#compare to CLT
+simse = simsd / sqrt(group)
+#calculate confidence
+low <- simmean - 1.96 * simse
+high <- simmean + 1.96 * simse
+
+library(knitr)
+
+theorecticalData <- c(theoreticalmean,theoreticalsd)
+
+simulationdata <- c(simmean, simsd)
+
+df = data.frame(theorecticalData,simulationdata)
+colnames(df) <- c("Theorectical", "Simulated")
+row.names(df) <- c("Mean", "SD")
+
+kable(df, format="markdown", caption="Comparison between Theorecital and Simulated Data")
+```
+## Distribution of Simulated Data around the mean (95% CI)
+```{r}
+ciData <- c(low, high)
+ciDF <- data.frame(ciData)
+row.names(ciDF) <- c("Low", "High")
+kable(ciDF, format="markdown", caption="CI for Simulated Data", title="Simulated Data CI")
+```
+
+## Histogram of Means from Simulation
+```{r}
+hist(matrixmean)
+```
+
+##Analysis
+
+### The null hypothesis Ho is the mean = 5; making the alternate hypothesis Ha the mean != 5. With a 95% confidence level, the simulated data is generated to test.  The histogram shows the data are normally distrubtedd and the data show the simulated mean falls with in the 95% level.  Therefore you can not reject the Ho.

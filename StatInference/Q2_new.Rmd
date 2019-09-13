@@ -1,0 +1,50 @@
+---
+title: "Tooth Growth Data Analysis"
+author: "Joe DeMaro"
+date: "March 6, 2019"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(reshape2)
+library(plyr)
+library(tidyverse)
+```
+## Load ToothGrowth data to a df
+```{r echo=TRUE}
+tgrowth <- ToothGrowth
+```
+#
+## Generate summary statistics for tgrowth data frame.
+```{r}
+summary(tgrowth)
+```
+## Boxplot data to demonstrate confidence intervals for supp and dose with regards to length of tooth
+```{r echo = FALSE}
+# gg <- ggplot(aes(x=dose, y=len), data=tgrowth) + 
+#           geom_boxplot(aes(color=supp))
+# 
+# print(gg)
+
+# summary_tgrowth <- aggregate(tgrowth$len, by=list(tgrowth$supp,tgrowth$dose), FUN=mean, na.rm=TRUE, na.action=NULL)
+# 
+# melted <- melt(tgrowth, id.vars=c("supp", "dose"))
+# 
+# means <- ddply(melted, c("supp", "dose", "variable"), summarise,
+#                mean=mean(value))
+# colnames(means) <- c("Supp", "Dose", "Len")
+# 
+# means.barplot <- qplot(x=Dose, y=Supp, data=means, geom="bar")
+# # 
+# print(means.barplot)
+boxplot(tgrowth$len ~ tgrowth$supp*tgrowth$dose, data=tgrowth, col=(c("grey","blue")),ylab="len", xlab="Supplement & dose", main="Tooth Growth")
+```
+
+## Conclusion
+
+### From the data, since the supplement dose combinations are not outside the standard deviations of the means, it cannot be concluded that the length of guinea pig teeth are significantly effected by the dose or supplement applied to the teeth.

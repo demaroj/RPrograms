@@ -1,0 +1,245 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Statistical Inference - Simulation Project},
+            pdfauthor={Joe DeMaro},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Statistical Inference - Simulation Project}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Joe DeMaro}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{December 2018}
+
+
+\begin{document}
+\maketitle
+
+\subsection{Set Parameters}\label{set-parameters}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"c:}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{rprograms}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{statinference"}\NormalTok{)}
+\NormalTok{n <-}\StringTok{ }\DecValTok{1000}
+\NormalTok{group <-}\StringTok{ }\DecValTok{40}
+\NormalTok{lambda <-}\StringTok{ }\FloatTok{0.2}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Calculate Theoretical Mean and
+SD}\label{calculate-theoretical-mean-and-sd}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{theoreticalmean <-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{lambda}
+\NormalTok{theoreticalsd <-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(lambda }\OperatorTok{*}\StringTok{ }\NormalTok{lambda)) }\OperatorTok{/}\StringTok{ }\NormalTok{group}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Run Simulation}\label{run-simulation}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# run the simulation}
+\NormalTok{data  <-}\StringTok{ }\KeywordTok{rexp}\NormalTok{(n }\OperatorTok{*}\StringTok{ }\NormalTok{group, lambda )}
+\NormalTok{matrixdata <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(data, n, group)}
+\NormalTok{matrixmean <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(matrixdata,}\DecValTok{1}\NormalTok{,mean)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Tabulate Simulation Data}\label{tabulate-simulation-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{simmean <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(matrixmean)}
+\NormalTok{simsd <-}\StringTok{ }\KeywordTok{sd}\NormalTok{(matrixmean)}
+\NormalTok{simvar <-}\StringTok{ }\KeywordTok{var}\NormalTok{(matrixmean)}
+
+\CommentTok{#compare to CLT}
+\NormalTok{simse =}\StringTok{ }\NormalTok{simsd }\OperatorTok{/}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(group)}
+\CommentTok{#calculate confidence}
+\NormalTok{low <-}\StringTok{ }\NormalTok{simmean }\OperatorTok{-}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{simse}
+\NormalTok{high <-}\StringTok{ }\NormalTok{simmean }\OperatorTok{+}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{simse}
+
+\KeywordTok{library}\NormalTok{(knitr)}
+
+\NormalTok{theorecticalData <-}\StringTok{ }\KeywordTok{c}\NormalTok{(theoreticalmean,theoreticalsd)}
+
+\NormalTok{simulationdata <-}\StringTok{ }\KeywordTok{c}\NormalTok{(simmean, simsd)}
+
+\NormalTok{df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(theorecticalData,simulationdata)}
+\KeywordTok{colnames}\NormalTok{(df) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Theorectical"}\NormalTok{, }\StringTok{"Simulated"}\NormalTok{)}
+\KeywordTok{row.names}\NormalTok{(df) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Mean"}\NormalTok{, }\StringTok{"SD"}\NormalTok{)}
+
+\KeywordTok{kable}\NormalTok{(df, }\DataTypeTok{format=}\StringTok{"markdown"}\NormalTok{, }\DataTypeTok{caption=}\StringTok{"Comparison between Theorecital and Simulated Data"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\toprule
+& Theorectical & Simulated\tabularnewline
+\midrule
+\endhead
+Mean & 5.000 & 5.0307701\tabularnewline
+SD & 0.625 & 0.8153677\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsection{Distribution of Simulated Data around the mean (95\%
+CI)}\label{distribution-of-simulated-data-around-the-mean-95-ci}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ciData <-}\StringTok{ }\KeywordTok{c}\NormalTok{(low, high)}
+\NormalTok{ciDF <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(ciData)}
+\KeywordTok{row.names}\NormalTok{(ciDF) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Low"}\NormalTok{, }\StringTok{"High"}\NormalTok{)}
+\KeywordTok{kable}\NormalTok{(ciDF, }\DataTypeTok{format=}\StringTok{"markdown"}\NormalTok{, }\DataTypeTok{caption=}\StringTok{"CI for Simulated Data"}\NormalTok{, }\DataTypeTok{title=}\StringTok{"Simulated Data CI"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\toprule
+& ciData\tabularnewline
+\midrule
+\endhead
+Low & 4.778085\tabularnewline
+High & 5.283455\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsection{Histogram of Means from
+Simulation}\label{histogram-of-means-from-simulation}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(matrixmean)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Q1_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\subsection{Analysis}\label{analysis}
+
+\subsubsection{Simulation data provides us with available means to under
+the concepts of population and sample data in regards to Normal
+Distribution, the leader of all distributions. After generating and
+tabulating the sample data, comparison clearly show that rejecting the
+null hypothesis is the appropriate action in this
+experiment.}\label{simulation-data-provides-us-with-available-means-to-under-the-concepts-of-population-and-sample-data-in-regards-to-normal-distribution-the-leader-of-all-distributions.-after-generating-and-tabulating-the-sample-data-comparison-clearly-show-that-rejecting-the-null-hypothesis-is-the-appropriate-action-in-this-experiment.}
+
+
+\end{document}

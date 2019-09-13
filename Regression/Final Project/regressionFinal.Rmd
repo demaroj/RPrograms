@@ -1,0 +1,75 @@
+---
+title: "Regression Final Project"
+author: "Joe DeMaro"
+date: "April 4, 2019"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(GGally)
+data("mtcars")
+```
+## Executive Summary
+You work for Motor Trend, a magazine about the automobile industry. 
+Looking at a data set of a collection of cars, 
+they are interested in exploring the relationship between 
+a set of variables and miles per gallon (MPG) (outcome). 
+They are particularly interested in the following two questions:
+
+"Is an automatic or manual transmission better for MPG"
+
+"Quantify the MPG difference between automatic and manual transmissions"
+
+To investigate the first question, a comparison of the raw data is used to drive a linear regression comparsion between the two variables within the inquire. The inital analysis shows a 7.25 mpg difference between manual and automatic transmissson.  The p-value for the comparison is 0.0014 indicating the difference is significant.  The regression data indicates this comparison only account for ~35% of the differences.
+The initial pass does not help determine if any other measurement affects mpg.  To determine if other factors might affect MPG, a regression model is executed with all variables considered. The information from this model (mod1) led to significant differences being seen between mpg and wgt, cyl, and disp.  These 3 variables were modeled with am to identify other variables affecting mpg.  wgt and cyl significantly affect mpg and the data show the 4 variables account for over 80% of the differences in mpg
+Residual analysis plot show that the data are non problematic and linear regression modeling is appropriate.
+
+# Appendix
+## Exploratory Data Visualization
+```{r mtcars}
+
+head(mtcars)
+str(mtcars)
+
+data.subset <- subset(mtcars, select=c(mpg,am))
+mt.auto <- mtcars[(mtcars$am==0),]
+mt.manual <- mtcars[(mtcars$am==1),]
+
+boxplot(mpg ~ am, data=mtcars, xlab="Transmission", ylab="MPG", main="MPG v Transmission Type")
+summary(mtcars)
+```
+## Compare Auto vs. Manual Transmission
+```{r}
+aggregate(data.subset[,1:2], list(data.subset$am), mean)
+mod0 <- lm(mpg ~ am, mtcars)
+summary(mod0)
+t.test(mt.auto$mpg, mt.manual$mpg)
+diffTrans <- mean(mt.manual$mpg) - mean(mt.auto$mpg)
+### Difference between manual and automatic transmission
+diffTrans
+```
+## Effect of Multiple Variables
+### Initial comparison driven by the questions of interest provide limited insight into the mtcars data. With additional data available and the linear regression results of mod0 indicating only 35% of the difference in mpg can be explained by am, a more complete analysis will be gleaned by looking at a broad comparison of all the variables and then determining a more filtered view based on the additional information.
+```{r}
+mod1 <- lm(mpg~cyl + disp + hp + drat + wt + qsec + vs + am + gear + carb, data=mtcars)
+summary(mod1)$coef
+summary(aov(mod1))
+```
+## Deeper Analysis
+### The analysis of variance from the regression model (mod1) shows 3 significantly different factors. A new model (mod2) below will limit x variables to the 3 discovered variables plus am, part of the original question.  The results show that transmission type plus number of cylinders and weight  have a significant impact on MPG
+```{r}
+mod2 <- lm(mpg ~ factor(am) + cyl + disp + wt, mtcars)
+summary(mod2)
+summary(aov(mod2))
+anova(mod0,mod2)
+```
+## Residual Analysis
+```{r}
+par(mfrow=c(2,2))
+plot(mod2)
+```
